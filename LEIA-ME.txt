@@ -1,16 +1,3 @@
-VERSAO DE TESTE (APK debug)
-1. Envie todos os ficheiros para um repositório novo no GitHub (incluindo .github).
-2. Actions > "Construir APK" > Artifacts > biblia-memoria-apk.
-
-VERSAO PARA PLAY STORE (assinada)
-1. Crie a chave (uma vez só; guarde o ficheiro e as senhas em lugar seguro, sem ela não consegue atualizar o app):
-   keytool -genkeypair -v -keystore release.keystore -alias biblia -keyalg RSA -keysize 2048 -validity 10000
-2. Converta para texto:  base64 -w 0 release.keystore   (no Windows: certutil -encode release.keystore chave.txt)
-3. No GitHub: Settings > Secrets and variables > Actions > New repository secret. Crie 4:
-   KEYSTORE_BASE64  (o texto base64)
-   KEYSTORE_PASSWORD (senha do keystore)
-   KEY_ALIAS (biblia)
-   KEY_PASSWORD (senha da chave)
-4. Actions > "APK e AAB assinados (Play Store)" > Run workflow.
-5. Em Artifacts descarregue biblia-memoria-release: o .aab vai para a Play Store, o .apk serve para instalar direto.
-NUNCA envie o release.keystore para o GitHub.
+Envie para a RAIZ do repositório GitHub: index.html, package.json, capacitor.config.json e a pasta .github (com main.yml e release.yml).
+O próprio workflow cria a pasta www e copia o index.html para lá.
+Depois: Actions > Construir APK > Artifacts > biblia-memoria-apk.
