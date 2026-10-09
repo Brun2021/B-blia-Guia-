@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bíblia Memória</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1ec; --card:#fbfcfa; --ink:#17261f; --muted:#5d6d64; --line:#d5dcd3;
+  --accent:#1f5a46; --accent-ink:#ffffff; --gold:#b8921c; --ok:#1f7a4d; --bad:#b3372f; --soft:#e2e9e1;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1a16; --card:#17251f; --ink:#e8efe9; --muted:#9fb0a5; --line:#27382f;
+    --accent:#6fcf9f; --accent-ink:#0b1a13; --gold:#e0c067; --ok:#6fcf9f; --bad:#f08a80; --soft:#1f3128;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1a16; --card:#17251f; --ink:#e8efe9; --muted:#9fb0a5; --line:#27382f;
+  --accent:#6fcf9f; --accent-ink:#0b1a13; --gold:#e0c067; --ok:#6fcf9f; --bad:#f08a80; --soft:#1f3128;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+main{max-width:720px;margin:0 auto;padding:20px 16px 8px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0}
+h1{font-size:1.9rem}
+h2{font-size:1.35rem;margin-bottom:10px}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.top small{color:var(--muted);display:block}
+.icon-btn{background:var(--card);border:1px solid var(--line);border-radius:12px;width:44px;height:44px;font-size:1.1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.muted{color:var(--muted)}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:12px 16px;font-weight:600;min-height:46px}
+.btn.alt{background:var(--soft);color:var(--ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.sm{padding:8px 12px;min-height:38px;font-size:.9rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+
+/* verse of the day */
+.votd{background:var(--accent);color:var(--accent-ink);border:0;padding:22px 20px}
+.votd .t{font-family:var(--serif);font-size:1.3rem;line-height:1.5;margin:6px 0 12px}
+.votd .r{font-weight:600;opacity:.9}
+.votd .btn{background:rgba(255,255,255,.18);color:inherit}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .votd .btn{background:rgba(0,0,0,.18)}}
+:root[data-theme="dark"] .votd .btn{background:rgba(0,0,0,.18)}
+
+.bars .lab{display:flex;justify-content:space-between;font-size:.92rem;margin-top:10px}
+.bar{height:10px;background:var(--soft);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .4s}
+
+.tips{counter-reset:s;padding:0;margin:0;list-style:none}
+.tips li{counter-increment:s;padding:10px 0 10px 40px;position:relative;border-top:1px solid var(--line)}
+.tips li:first-child{border-top:0}
+.tips li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;
+  background:var(--soft);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.tips b{display:block}
+
+/* tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);
+  display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:10}
+nav.tabs button{flex:1;background:none;border:0;border-radius:12px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:.78rem;font-weight:600;min-height:52px}
+nav.tabs button .e{font-size:1.25rem;line-height:1}
+nav.tabs button[aria-selected="true"]{color:var(--accent);background:var(--soft)}
+
+/* books */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-weight:600;font-size:.9rem}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+input[type=text],input[type=search],textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+textarea{min-height:110px;resize:vertical;font-family:var(--serif);font-size:1.1rem;line-height:1.55}
+.grp{margin:18px 0 8px;display:flex;justify-content:space-between;align-items:baseline}
+.grp h3{font-size:1.05rem}
+.book{width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:block}
+.book .h{display:flex;align-items:center;gap:12px}
+.book .n{width:34px;height:34px;border-radius:10px;background:var(--soft);display:grid;place-items:center;font-weight:700;font-size:.85rem;flex:none}
+.book .nm{font-family:var(--serif);font-size:1.1rem;font-weight:600;flex:1}
+.book .cp{color:var(--muted);font-size:.9rem;white-space:nowrap}
+.book.known{border-color:var(--gold)}
+.book.known .n{background:var(--gold);color:#fff}
+.book .more{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:.95rem;color:var(--muted)}
+.book .more b{color:var(--ink)}
+.caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:4px;margin-top:10px}
+.caps span{background:var(--soft);color:var(--ink);border-radius:8px;text-align:center;font-size:.8rem;padding:5px 0}
+
+/* verses */
+.vitem{width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:8px;display:block}
+.vitem .r{font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.vitem .p{font-family:var(--serif);color:var(--muted);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vitem.done{border-color:var(--gold)}
+.badge{color:var(--gold);font-weight:700}
+
+.study .ref{font-family:var(--serif);font-size:1.5rem;font-weight:600;margin-bottom:12px}
+.verse{font-family:var(--serif);font-size:1.4rem;line-height:1.75;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.w{display:inline-block;margin-right:.3em}
+.w.h{background:var(--soft);border-radius:6px;padding:0 6px;color:var(--muted);letter-spacing:.06em;cursor:pointer;border:0;font:inherit}
+.w.ok{color:var(--ok)}
+.w.miss{color:var(--bad);text-decoration:underline wavy}
+.level{margin:16px 0}
+.level label{display:flex;justify-content:space-between;font-weight:600;margin-bottom:6px}
+input[type=range]{width:100%;accent-color:var(--accent);height:34px}
+.result{font-weight:700;font-size:1.1rem;margin:10px 0}
+
+/* quiz */
+.q{font-family:var(--serif);font-size:1.4rem;line-height:1.4;margin-bottom:14px}
+.q.verse-q{font-size:1.2rem;line-height:1.6}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px;margin-bottom:8px;font-weight:600;min-height:52px}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--card))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--card))}
+.score{display:flex;gap:16px;margin-bottom:14px}
+.score div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;flex:1}
+.score b{display:block;font-family:var(--serif);font-size:1.5rem}
+.fb{margin:6px 0 12px;font-weight:600}
+.scroll{overflow-x:auto}
+.hidden{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav class="tabs" role="tablist" aria-label="Secções">
+  <button role="tab" data-tab="inicio"><span class="e">🏠</span>Início</button>
+  <button role="tab" data-tab="livros"><span class="e">📖</span>Livros</button>
+  <button role="tab" data-tab="versiculos"><span class="e">✍️</span>Versículos</button>
+  <button role="tab" data-tab="treinar"><span class="e">🎯</span>Treinar</button>
+</nav>
+
+<script>
+/* ---------- Dados: 66 livros ---------- */
+var GROUPS = [
+  ["Pentateuco","AT",[["Gênesis",50],["Êxodo",40],["Levítico",27],["Números",36],["Deuteronómio",34]]],
+  ["Livros históricos","AT",[["Josué",24],["Juízes",21],["Rute",4],["1 Samuel",31],["2 Samuel",24],["1 Reis",22],["2 Reis",25],["1 Crónicas",29],["2 Crónicas",36],["Esdras",10],["Neemias",13],["Ester",10]]],
+  ["Livros poéticos","AT",[["Jó",42],["Salmos",150],["Provérbios",31],["Eclesiastes",12],["Cantares",8]]],
+  ["Profetas maiores","AT",[["Isaías",66],["Jeremias",52],["Lamentações",5],["Ezequiel",48],["Daniel",12]]],
+  ["Profetas menores","AT",[["Oseias",14],["Joel",3],["Amós",9],["Obadias",1],["Jonas",4],["Miqueias",7],["Naum",3],["Habacuque",3],["Sofonias",3],["Ageu",2],["Zacarias",14],["Malaquias",4]]],
+  ["Evangelhos","NT",[["Mateus",28],["Marcos",16],["Lucas",24],["João",21]]],
+  ["História da Igreja","NT",[["Atos",28]]],
+  ["Cartas de Paulo","NT",[["Romanos",16],["1 Coríntios",16],["2 Coríntios",13],["Gálatas",6],["Efésios",6],["Filipenses",4],["Colossenses",4],["1 Tessalonicenses",5],["2 Tessalonicenses",3],["1 Timóteo",6],["2 Timóteo",4],["Tito",3],["Filemom",1]]],
+  ["Cartas gerais","NT",[["Hebreus",13],["Tiago",5],["1 Pedro",5],["2 Pedro",3],["1 João",5],["2 João",1],["3 João",1],["Judas",1]]],
+  ["Profecia","NT",[["Apocalipse",22]]]
+];
+var BOOKS = [];
+GROUPS.forEach(function(g){ g[2].forEach(function(b){ BOOKS.push({name:b[0],ch:b[1],group:g[0],t:g[1],i:BOOKS.length}); }); });
+
+/* ---------- Versículos (Almeida, domínio público) ---------- */
+var VERSES = [
+ ["Gênesis 1:1","Gênesis","No princípio criou Deus os céus e a terra."],
+ ["Josué 1:9","Josué","Não to mandei eu? Esforça-te, e tem bom ânimo; não pasmes, nem te espantes, porque o Senhor teu Deus é contigo, por onde quer que andares."],
+ ["Salmos 1:1","Salmos","Bem-aventurado o homem que não anda segundo o conselho dos ímpios, nem se detém no caminho dos pecadores, nem se assenta na roda dos escarnecedores."],
+ ["Salmos 23:1","Salmos","O Senhor é o meu pastor, nada me faltará."],
+ ["Salmos 23:4","Salmos","Ainda que eu andasse pelo vale da sombra da morte, não temeria mal algum, porque tu estás comigo; a tua vara e o teu cajado me consolam."],
+ ["Salmos 27:1","Salmos","O Senhor é a minha luz e a minha salvação; a quem temerei? O Senhor é a força da minha vida; de quem me recearei?"],
+ ["Salmos 46:1","Salmos","Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia."],
+ ["Salmos 91:1","Salmos","Aquele que habita no esconderijo do Altíssimo, à sombra do Onipotente descansará."],
+ ["Salmos 119:105","Salmos","Lâmpada para os meus pés é a tua palavra, e luz para o meu caminho."],
+ ["Provérbios 3:5-6","Provérbios","Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento. Reconhece-o em todos os teus caminhos, e ele endireitará as tuas veredas."],
+ ["Provérbios 22:6","Provérbios","Instrui o menino no caminho em que deve andar, e, até quando envelhecer, não se desviará dele."],
+ ["Eclesiastes 3:1","Eclesiastes","Tudo tem o seu tempo determinado, e há tempo para todo o propósito debaixo do céu."],
+ ["Isaías 40:31","Isaías","Mas os que esperam no Senhor renovarão as forças, subirão com asas como águias; correrão, e não se cansarão; caminharão, e não se fatigarão."],
+ ["Isaías 41:10","Isaías","Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça."],
+ ["Jeremias 29:11","Jeremias","Porque eu bem sei os pensamentos que penso de vós, diz o Senhor; pensamentos de paz, e não de mal, para vos dar o fim que esperais."],
+ ["Mateus 6:33","Mateus","Mas buscai primeiro o reino de Deus, e a sua justiça, e todas estas coisas vos serão acrescentadas."],
+ ["Mateus 11:28","Mateus","Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei."],
+ ["João 3:16","João","Porque Deus amou o mundo de tal maneira que deu o seu Filho unigénito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna."],
+ ["João 14:6","João","Disse-lhe Jesus: Eu sou o caminho, e a verdade e a vida; ninguém vem ao Pai, senão por mim."],
+ ["Romanos 3:23","Romanos","Porquanto todos pecaram e destituídos estão da glória de Deus."],
+ ["Romanos 6:23","Romanos","Porque o salário do pecado é a morte, mas o dom gratuito de Deus é a vida eterna, por Cristo Jesus, nosso Senhor."],
+ ["Romanos 8:28","Romanos","E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito."],
+ ["Romanos 12:2","Romanos","E não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento, para que experimenteis qual seja a boa, agradável, e perfeita vontade de Deus."],
+ ["1 Coríntios 13:13","1 Coríntios","Agora, pois, permanecem a fé, a esperança e o amor, estes três, mas o maior destes é o amor."],
+ ["Efésios 2:8","Efésios","Porque pela graça sois salvos, por meio da fé; e isto não vem de vós, é dom de Deus."],
+ ["Filipenses 4:13","Filipenses","Posso todas as coisas em Cristo que me fortalece."],
+ ["2 Timóteo 1:7","2 Timóteo","Porque Deus não nos deu o espírito de temor, mas de fortaleza, e de amor, e de moderação."],
+ ["Hebreus 11:1","Hebreus","Ora, a fé é o firme fundamento das coisas que se esperam, e a prova das coisas que se não veem."],
+ ["1 João 1:9","1 João","Se confessarmos os nossos pecados, ele é fiel e justo para nos perdoar os pecados, e nos purificar de toda a injustiça."]
+].map(function(v,i){ return {id:"b"+i,ref:v[0],book:v[1],text:v[2],custom:false}; });
+
+/* ---------- Estado guardado ---------- */
+var DEF = {learned:{}, books:{}, custom:[], stats:{right:0,total:0,best:0}};
+var S = load();
+function load(){
+  try{ var s = localStorage.getItem("biblia-memoria-v1"); if(s){ var o = JSON.parse(s); return Object.assign({}, DEF, o); } }catch(e){}
+  return JSON.parse(JSON.stringify(DEF));
+}
+function save(){ try{ localStorage.setItem("biblia-memoria-v1", JSON.stringify(S)); }catch(e){} }
+function allVerses(){ return VERSES.concat(S.custom.map(function(c){ return {id:c.id,ref:c.ref,book:"",text:c.text,custom:true}; })); }
+
+/* ---------- Utilitários ---------- */
+var $app = document.getElementById("app");
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function rnd(n){ return Math.floor(Math.random()*n); }
+function shuffle(a){ a = a.slice(); for(var i=a.length-1;i>0;i--){ var j=rnd(i+1), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function seeded(str){ var h=1779033703^str.length; for(var i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return function(){ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
+function normTok(t){ return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,""); }
+function dayIndex(){ return Math.floor((Date.now() - new Date().getTimezoneOffset()*60000)/86400000); }
+
+/* ---------- Navegação ---------- */
+var tab = "inicio", openId = null, bookFilter = "Todos", bookQuery = "", openBook = null;
+document.querySelectorAll("nav.tabs button").forEach(function(b){
+  b.addEventListener("click", function(){ tab = b.dataset.tab; openId = null; render(); window.scrollTo(0,0); });
+});
+function render(){
+  document.querySelectorAll("nav.tabs button").forEach(function(b){ b.setAttribute("aria-selected", b.dataset.tab===tab ? "true":"false"); });
+  if(tab==="inicio") renderInicio();
+  else if(tab==="livros") renderLivros();
+  else if(tab==="versiculos") openId ? renderEstudo() : renderLista();
+  else renderTreinar();
+}
+function toggleTheme(){
+  var r = document.documentElement, cur = r.getAttribute("data-theme");
+  var dark = cur ? cur==="dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  r.setAttribute("data-theme", dark ? "light" : "dark");
+}
+
+/* ---------- Início ---------- */
+function renderInicio(){
+  var vs = allVerses(), v = vs[dayIndex() % vs.length];
+  var learned = vs.filter(function(x){ return S.learned[x.id]; }).length;
+  var kb = BOOKS.filter(function(b){ return S.books[b.i]; }).length;
+  var acc = S.stats.total ? Math.round(100*S.stats.right/S.stats.total) : 0;
+  $app.innerHTML =
+    '<div class="top"><div><h1>Bíblia Memória</h1><small>66 livros · 1.189 capítulos</small></div>' +
+    '<button class="icon-btn" id="theme" aria-label="Alternar tema claro/escuro">◐</button></div>' +
+    '<div class="card votd"><div class="r">Versículo do dia</div><p class="t">'+esc(v.text)+'</p><div class="r">'+esc(v.ref)+'</div>' +
+    '<div class="row" style="margin-top:14px"><button class="btn sm" id="studyDay">Estudar este versículo</button></div></div>' +
+    '<div class="card bars"><h2>O teu progresso</h2>' +
+      '<div class="lab"><span>Versículos decorados</span><b>'+learned+' / '+vs.length+'</b></div><div class="bar"><i style="width:'+(100*learned/vs.length)+'%"></i></div>' +
+      '<div class="lab"><span>Livros que já sabes na ordem</span><b>'+kb+' / 66</b></div><div class="bar"><i style="width:'+(100*kb/66)+'%"></i></div>' +
+      '<div class="lab"><span>Acertos no treino</span><b>'+acc+'% ('+S.stats.total+' perguntas)</b></div><div class="bar"><i style="width:'+acc+'%"></i></div>' +
+    '</div>' +
+    '<div class="card"><h2>Como decorar mais depressa</h2><ol class="tips">' +
+      '<li><b>Lê em voz alta 3 vezes</b>Ouvir a tua própria voz ajuda a fixar a frase.</li>' +
+      '<li><b>Esconde palavras aos poucos</b>Em Versículos, sobe o nível até só veres as primeiras letras.</li>' +
+      '<li><b>Escreve de memória</b>Usa o botão Testar-me e vê onde falhaste.</li>' +
+      '<li><b>Repete ao fim de 1, 3 e 7 dias</b>Revisões espaçadas guardam o versículo por muito mais tempo.</li>' +
+      '<li><b>Decora sempre a referência</b>Diz o livro, capítulo e versículo antes e depois do texto.</li>' +
+    '</ol></div>';
+  document.getElementById("theme").onclick = toggleTheme;
+  document.getElementById("studyDay").onclick = function(){ tab="versiculos"; openId=v.id; level=2; render(); window.scrollTo(0,0); };
+}
+
+/* ---------- Livros ---------- */
+function renderLivros(){
+  $app.innerHTML =
+    '<div class="top"><h1>Livros</h1></div>' +
+    '<p class="muted" style="margin-bottom:12px">Toca num livro para ver a posição e os capítulos. Marca com ⭐ os que já sabes na ordem.</p>' +
+    '<div class="chips" role="group" aria-label="Filtro">' +
+      ["Todos","AT","NT"].map(function(f){ return '<button class="chip" data-f="'+f+'" aria-pressed="'+(bookFilter===f)+'">'+(f==="AT"?"Antigo Testamento":f==="NT"?"Novo Testamento":"Todos")+'</button>'; }).join("") +
+    '</div>' +
+    '<input type="search" id="bq" placeholder="Procurar livro…" value="'+esc(bookQuery)+'" aria-label="Procurar livro" style="margin-bottom:6px">' +
+    '<div id="blist"></div>';
+  document.querySelectorAll(".chip").forEach(function(c){ c.onclick = function(){ bookFilter = c.dataset.f; renderLivros(); }; });
+  document.getElementById("bq").oninput = function(e){ bookQuery = e.target.value; drawBooks(); };
+  drawBooks();
+}
+function drawBooks(){
+  var q = normTok(bookQuery), html = "";
+  GROUPS.forEach(function(g){
+    if(bookFilter!=="Todos" && g[1]!==bookFilter) return;
+    var items = BOOKS.filter(function(b){ return b.group===g[0] && (!q || normTok(b.name).indexOf(q)>-1); });
+    if(!items.length) return;
+    html += '<div class="grp"><h3>'+g[0]+'</h3><span class="muted">'+items.length+' '+(items.length===1?'livro':'livros')+'</span></div>';
+    items.forEach(function(b){
+      var known = S.books[b.i], isOpen = openBook===b.i, prev = BOOKS[b.i-1], next = BOOKS[b.i+1];
+      html += '<div class="book'+(known?' known':'')+'" data-i="'+b.i+'">' +
+        '<button class="h" style="all:unset;display:flex;align-items:center;gap:12px;width:100%;cursor:pointer" data-open="'+b.i+'" aria-expanded="'+isOpen+'">' +
+          '<span class="n">'+(b.i+1)+'</span><span class="nm">'+esc(b.name)+'</span><span class="cp">'+b.ch+' cap.</span>' +
+        '</button>';
+      if(isOpen){
+        html += '<div class="more"><p>Livro <b>'+(b.i+1)+'</b> de 66 · <b>'+b.ch+'</b> '+(b.ch===1?'capítulo':'capítulos')+' · '+(b.t==="AT"?"Antigo":"Novo")+' Testamento</p>' +
+          '<p style="margin-top:6px">Vem depois de <b>'+(prev?esc(prev.name):'—')+'</b> e antes de <b>'+(next?esc(next.name):'—')+'</b>.</p>' +
+          '<div class="caps" aria-label="Capítulos">'+Array.from({length:b.ch},function(_,k){ return '<span>'+(k+1)+'</span>'; }).join("")+'</div>' +
+          '<div class="row" style="margin-top:12px"><button class="btn sm '+(known?'alt':'')+'" data-known="'+b.i+'">'+(known?'⭐ Já sei este livro':'☆ Marcar como sabido')+'</button></div></div>';
+      }
+      html += '</div>';
+    });
+  });
+  document.getElementById("blist").innerHTML = html || '<div class="card muted">Nenhum livro encontrado. Tenta outro nome.</div>';
+  document.querySelectorAll("[data-open]").forEach(function(b){ b.onclick = function(){ var i = +b.dataset.open; openBook = openBook===i ? null : i; drawBooks(); }; });
+  document.querySelectorAll("[data-known]").forEach(function(b){ b.onclick = function(){ var i = +b.dataset.known; if(S.books[i]) delete S.books[i]; else S.books[i]=1; save(); drawBooks(); }; });
+}
+
+/* ---------- Versículos: lista ---------- */
+var level = 1;
+function renderLista(){
+  var vs = allVerses();
+  $app.innerHTML =
+    '<div class="top"><h1>Versículos</h1></div>' +
+    '<p class="muted" style="margin-bottom:12px">Escolhe um versículo para estudar. Texto na tradução Almeida (domínio público).</p>' +
+    vs.map(function(v){
+      return '<button class="vitem'+(S.learned[v.id]?' done':'')+'" data-v="'+v.id+'"><div class="r"><span>'+esc(v.ref)+'</span>'+(S.learned[v.id]?'<span class="badge">⭐ decorado</span>':'')+'</div><div class="p">'+esc(v.text)+'</div></button>';
+    }).join("") +
+    '<div class="card" style="margin-top:16px"><h2>Adicionar o teu versículo</h2>' +
+      '<label for="nref" class="muted">Referência (ex.: Salmos 37:5)</label>' +
+      '<input type="text" id="nref" style="margin:4px 0 10px">' +
+      '<label for="ntxt" class="muted">Texto do versículo</label>' +
+      '<textarea id="ntxt" style="margin:4px 0 10px"></textarea>' +
+      '<div class="fb" id="nfb" role="status"></div>' +
+      '<button class="btn" id="nadd">Guardar versículo</button></div>';
+  document.querySelectorAll("[data-v]").forEach(function(b){ b.onclick = function(){ openId = b.dataset.v; level = 1; render(); window.scrollTo(0,0); }; });
+  document.getElementById("nadd").onclick = function(){
+    var r = document.getElementById("nref").value.trim(), t = document.getElementById("ntxt").value.trim(), fb = document.getElementById("nfb");
+    if(!r || !t){ fb.style.color="var(--bad)"; fb.textContent = "Preenche a referência e o texto."; return; }
+    S.custom.push({id:"c"+Date.now(), ref:r, text:t}); save(); render();
+  };
+}
+
+/* ---------- Versículos: estudo ---------- */
+var revealed = {}, testing = false, testResult = null;
+function renderEstudo(){
+  var v = allVerses().filter(function(x){ return x.id===openId; })[0];
+  if(!v){ openId = null; return render(); }
+  var toks = v.text.split(/\s+/);
+  var frac = [0,.25,.5,.75,1][level];
+  var rand = seeded(v.id), order = toks.map(function(_,i){ return i; });
+  for(var i=order.length-1;i>0;i--){ var j=Math.floor(rand()*(i+1)), t=order[i]; order[i]=order[j]; order[j]=t; }
+  var hide = {}; order.slice(0, Math.round(toks.length*frac)).forEach(function(i){ hide[i]=1; });
+  var names = ["Texto completo","Esconder 25%","Esconder 50%","Esconder 75%","Só primeiras letras"];
+  var body;
+  if(testResult){
+    body = toks.map(function(tk,i){ return '<span class="w '+(testResult.ok[i]?'ok':'miss')+'">'+esc(tk)+'</span>'; }).join("");
+  } else {
+    body = toks.map(function(tk,i){
+      var key = v.id+":"+i;
+      if(hide[i] && !revealed[key]){
+        var first = false, mask = tk.replace(/\p{L}/gu,function(ch){ if(!first){ first = true; return ch; } return "_"; });
+        return '<button class="w h" data-r="'+key+'" aria-label="Palavra escondida, toca para ver">'+esc(mask)+'</button>';
+      }
+      return '<span class="w">'+esc(tk)+'</span>';
+    }).join("");
+  }
+  var done = !!S.learned[v.id];
+  $app.innerHTML =
+    '<div class="study"><div class="row" style="margin-bottom:14px"><button class="btn ghost sm" id="back">← Voltar</button><span class="grow"></span>' +
+    (v.custom ? '<button class="btn ghost sm" id="del">Apagar</button>' : '') + '</div>' +
+    '<div class="ref">'+esc(v.ref)+'</div>' +
+    '<div class="verse" id="vbox">'+body+'</div>' +
+    (testing ? '' :
+      '<div class="level"><label for="lv"><span>Nível de memorização</span><span>'+names[level]+'</span></label>' +
+      '<input type="range" id="lv" min="0" max="4" step="1" value="'+level+'"><p class="muted">Toca numa palavra escondida para a ver.</p></div>') +
+    (testing ?
+      '<div class="level"><label for="ta">Escreve o versículo de memória</label><textarea id="ta" placeholder="Escreve aqui…"></textarea></div>' +
+      '<div class="row"><button class="btn" id="check">Verificar</button><button class="btn ghost" id="cancel">Cancelar</button></div>' : '') +
+    (testResult ? '<div class="result" role="status">Acertaste '+testResult.pct+'% das palavras'+(testResult.pct===100?' 🎉':'')+'</div><p class="muted">Verde: certas · vermelho: em falta ou diferentes.</p>' : '') +
+    (!testing ? '<div class="row" style="margin-top:14px"><button class="btn alt grow" id="test">Testar-me</button>' +
+      '<button class="btn grow '+(done?'alt':'')+'" id="learn">'+(done?'⭐ Decorado':'Já sei de cor')+'</button></div>' : '') +
+    '</div>';
+  document.getElementById("back").onclick = function(){ openId=null; testing=false; testResult=null; revealed={}; render(); };
+  var del = document.getElementById("del");
+  if(del) del.onclick = function(){ S.custom = S.custom.filter(function(c){ return c.id!==v.id; }); delete S.learned[v.id]; save(); openId=null; render(); };
+  var lv = document.getElementById("lv");
+  if(lv) lv.oninput = function(e){ level = +e.target.value; revealed = {}; testResult = null; renderEstudo(); document.getElementById("lv").focus(); };
+  document.querySelectorAll("[data-r]").forEach(function(b){ b.onclick = function(){ revealed[b.dataset.r]=1; renderEstudo(); }; });
+  var tb = document.getElementById("test"); if(tb) tb.onclick = function(){ testing=true; testResult=null; renderEstudo(); document.getElementById("ta").focus(); };
+  var lb = document.getElementById("learn"); if(lb) lb.onclick = function(){ if(S.learned[v.id]) delete S.learned[v.id]; else S.learned[v.id]=1; save(); renderEstudo(); };
+  var cc = document.getElementById("cancel"); if(cc) cc.onclick = function(){ testing=false; testResult=null; renderEstudo(); };
+  var ck = document.getElementById("check");
+  if(ck) ck.onclick = function(){
+    var typed = document.getElementById("ta").value.split(/\s+/).map(normTok).filter(Boolean);
+    var target = toks.map(normTok);
+    var m = target.length, n = typed.length, dp = [];
+    for(var a=0;a<=m;a++){ dp.push(new Array(n+1).fill(0)); }
+    for(a=1;a<=m;a++) for(var b=1;b<=n;b++) dp[a][b] = target[a-1]===typed[b-1] ? dp[a-1][b-1]+1 : Math.max(dp[a-1][b], dp[a][b-1]);
+    var ok = {}, x=m, y=n;
+    while(x>0 && y>0){ if(target[x-1]===typed[y-1]){ ok[x-1]=1; x--; y--; } else if(dp[x-1][y]>=dp[x][y-1]) x--; else y--; }
+    testResult = {ok:ok, pct:Math.round(100*dp[m][n]/m)};
+    testing = false; renderEstudo();
+  };
+}
+
+/* ---------- Treinar (quiz) ---------- */
+var Q = null, streak = 0, answered = false;
+function pickOptions(correct, pool, n){
+  var others = shuffle(pool.filter(function(x){ return x!==correct; }));
+  return shuffle([correct].concat(others.slice(0,n-1)));
+}
+function newQuestion(){
+  var kinds = ["chapters","next","position","testament","group","verse"], k = kinds[rnd(kinds.length)], b, q;
+  if(k==="chapters"){
+    b = BOOKS[rnd(66)];
+    var pool = Array.from(new Set(BOOKS.map(function(x){ return x.ch; })));
+    var near = pool.filter(function(c){ return c!==b.ch && Math.abs(c-b.ch)<=12; });
+    var optsC = pickOptions(b.ch, near.length>=3 ? near.concat([b.ch]) : pool, 4);
+    q = {text:"Quantos capítulos tem "+b.name+"?", opts:optsC.map(String), ans:String(b.ch)};
+  } else if(k==="next"){
+    b = BOOKS[rnd(65)];
+    q = {text:"Que livro vem depois de "+b.name+"?", ans:BOOKS[b.i+1].name};
+    q.opts = pickOptions(q.ans, BOOKS.slice(Math.max(0,b.i-4), b.i+7).map(function(x){ return x.name; }), 4);
+  } else if(k==="position"){
+    b = BOOKS[rnd(66)];
+    q = {text:"Qual é o livro n.º "+(b.i+1)+" da Bíblia?", ans:b.name};
+    q.opts = pickOptions(b.name, BOOKS.slice(Math.max(0,b.i-4), b.i+5).map(function(x){ return x.name; }), 4);
+  } else if(k==="testament"){
+    b = BOOKS[rnd(66)];
+    q = {text:b.name+" está no Antigo ou no Novo Testamento?", opts:["Antigo Testamento","Novo Testamento"], ans:b.t==="AT"?"Antigo Testamento":"Novo Testamento"};
+  } else if(k==="group"){
+    b = BOOKS[rnd(66)];
+    var near2 = GROUPS.filter(function(g){ return g[1]===b.t; }).map(function(g){ return g[0]; });
+    var gp = near2.length>=4 ? near2 : GROUPS.map(function(g){ return g[0]; });
+    q = {text:"A que grupo pertence "+b.name+"?", ans:b.group, opts:pickOptions(b.group, gp, 4)};
+  } else {
+    var v = VERSES[rnd(VERSES.length)];
+    q = {text:"Onde está este versículo?", verse:v.text, ans:v.ref, opts:pickOptions(v.ref, VERSES.map(function(x){ return x.ref; }), 4)};
+  }
+  return q;
+}
+function renderTreinar(){
+  if(!Q){ Q = newQuestion(); answered = false; }
+  var acc = S.stats.total ? Math.round(100*S.stats.right/S.stats.total) : 0;
+  $app.innerHTML =
+    '<div class="top"><h1>Treinar</h1></div>' +
+    '<div class="score"><div><b>'+streak+'</b><span class="muted">Seguidas</span></div><div><b>'+S.stats.best+'</b><span class="muted">Melhor</span></div><div><b>'+acc+'%</b><span class="muted">Acertos</span></div></div>' +
+    '<div class="q'+(Q.verse?' verse-q':'')+'">'+(Q.verse ? '“'+esc(Q.verse)+'”<div class="muted" style="font-family:var(--sans);font-size:1rem;margin-top:10px">'+esc(Q.text)+'</div>' : esc(Q.text))+'</div>' +
+    '<div id="opts">'+Q.opts.map(function(o,i){ return '<button class="opt" data-o="'+i+'">'+esc(o)+'</button>'; }).join("")+'</div>' +
+    '<div class="fb" id="qfb" role="status"></div>' +
+    '<button class="btn hidden" id="nextq">Próxima pergunta</button>';
+  document.querySelectorAll(".opt").forEach(function(b){ b.onclick = function(){ answer(b); }; });
+  document.getElementById("nextq").onclick = function(){ Q = null; renderTreinar(); };
+}
+function answer(btn){
+  if(answered) return; answered = true;
+  var chosen = Q.opts[+btn.dataset.o], right = chosen===Q.ans;
+  S.stats.total++;
+  if(right){ S.stats.right++; streak++; if(streak>S.stats.best) S.stats.best = streak; } else { streak = 0; }
+  save();
+  document.querySelectorAll(".opt").forEach(function(b){
+    var o = Q.opts[+b.dataset.o];
+    if(o===Q.ans) b.classList.add("right");
+    else if(b===btn) b.classList.add("wrong");
+    b.disabled = true;
+  });
+  var fb = document.getElementById("qfb");
+  fb.style.color = right ? "var(--ok)" : "var(--bad)";
+  fb.textContent = right ? "Certo! Continua assim." : "Quase. A resposta certa é: "+Q.ans;
+  document.getElementById("nextq").classList.remove("hidden");
+  document.getElementById("nextq").focus();
+}
+
+render();
+</script>
+</body>
+</html>
