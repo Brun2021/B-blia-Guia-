@@ -1,3 +1,4 @@
-Envie para a RAIZ do repositório GitHub: index.html, package.json, capacitor.config.json e a pasta .github (main.yml e release.yml).
-Nesta versão: leitura por voz (plugin text-to-speech) e referências cruzadas.
-Se atualizar um repositório já existente, substitua index.html, package.json e o conteúdo de .github/workflows/main.yml.
+Envie para a RAIZ do repositório GitHub: index.html, package.json, capacitor.config.json, make-icons.py, patch-gradle.py e a pasta .github (main.yml e release.yml).
+Ícone: o make-icons.py desenha o ícone da app durante a compilação (não precisa de mais nada).
+Pasta icons/: pré-visualizações (icon-512.png serve para a ficha da Play Store).
+Se atualizar um repositório já existente: substitua index.html e o conteúdo de .github/workflows/main.yml, e envie o make-icons.py.
